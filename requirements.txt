@@ -12,3 +12,4 @@ langchain_openai==0.1.13
 openai==1.35.7
 pinecone==4.0.0
 python-dotenv==1.0.1
+cassio==0.1.8
