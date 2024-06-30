@@ -14,3 +14,4 @@ pinecone==4.0.0
 python-dotenv==1.0.1
 cassio==0.1.8
 PyPDF2==3.0.1
+langchain_community==0.2.6
