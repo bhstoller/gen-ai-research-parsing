@@ -7,7 +7,8 @@ It contains functions to initialize cassio and OpenAI
 
 # from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 # from langchain_community.vectorstores import Cassandra
-from langchain_openai import OpenAI, OpenAIEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.llms import OpenAI
 import cassio
 
 def initialize_cassio(db_token, db_id):
