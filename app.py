@@ -48,7 +48,7 @@ def process_question(query):
 
 # Streamlit app layout
 st.title("Research Document Query Application")
-st.write("Enter questions about the research documents")
+st.write("Ask questions about the research documents")
 
 # User input
 user_input = st.text_input("Enter your question here:")
