@@ -15,52 +15,48 @@ References:
     - Langchain Documentation: https://python.langchain.com/v0.2/docs/integrations/llms/openai/
 """
 
-from .utils import get_env_var
-from .components import initialize_cassio, llm_embedding
-from .reader import read_directory
-from .splitter import intelligent_chunk
-from .vector import create_vector_store, load_text, index_text
-from .lengths import analyze_length
+import os
+from langchain.indexes.vectorstore import VectorStoreIndexWrapper
+from langchain_community.vectorstores import Cassandra
+from app.utils import get_env_var, tokenize_sentence
+from app.reader import read_directory
+from app.splitter import intelligent_chunk
+from app.vector import create_vector_store, load_text, index_text
+from app.lengths import analyze_text_lengths
 
 def setup_environment():
     """
-    Set up the environment and initialize components.
+    Initializes the environment variables and LLM components.
     """
-    initialize_cassio(get_env_var('ASTRA_TOKEN'), get_env_var('ASTRA_DB_ID'))
-    llm, embedding = llm_embedding(get_env_var('OPENAI_API_KEY'))
+    astra_id = get_env_var('ASTRA_DB_ID')
+    astra_token = get_env_var('ASTRA_TOKEN')
+    openai_api_key = get_env_var('OPENAI_API_KEY')
+
+    initialize_cassio(astra_token, astra_id)
+    llm, embedding = llm_embedding(openai_api_key)
     return llm, embedding
 
 def process_documents(directory, embedding):
     """
-    Read, chunk, and process documents.
+    Reads and processes documents to create the vector index.
     """
-    # Read documents
+    mean_length, median_length, max_length = analyze_text_lengths(directory)
+    max_chunk_size = int(mean_length / 2)
+    model_max_content_length = 4097
+    buffer_length = 100
+    max_chunk_size = min(max_chunk_size, model_max_content_length - buffer_length)
+
     text = read_directory(directory)
-
-<<<<<<< HEAD
-    # Chunk documents
-    mean_length, std_length, max_length = analyze_length(directory)
-    possible_chunk = int(mean_length + std_length)
-    model_max = 4097
-    buffer = 100
-    max_chunk_size = min(possible_chunk, max_length / 2, model_max - buffer)
     splitted_text = intelligent_chunk(text, max_chunk_size=max_chunk_size)
-=======
-directory = Path("documents")
-text = read_directory(directory)
-splitted_text = split_text(text, chunk_size=1600)
->>>>>>> 7c6e76c8d627f3163c4f369cdeb4995ec72a6a1f
 
-    # Process documents
     vector_store = create_vector_store(embedding, table_name="sumhack")
     vector_store = load_text(vector_store, splitted_text)
     vector_index = index_text(vector_store)
-    
     return vector_index
 
 def process_question(query, vector_index, llm):
     """
-    Process a given query and return the response.
+    Processes the user queries to return the appropriate response.
     """
     response = vector_index.query(query, llm).strip()
     return response
