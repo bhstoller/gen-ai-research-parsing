@@ -19,7 +19,7 @@ import os
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain_community.vectorstores import Cassandra
 from app.utils import get_env_var, tokenize_sentence
-from app.components import intialize_cassio, llm_embedding
+from app.components import initialize_cassio, llm_embedding
 from app.reader import read_directory
 from app.splitter import intelligent_chunk
 from app.vector import create_vector_store, load_text, index_text
