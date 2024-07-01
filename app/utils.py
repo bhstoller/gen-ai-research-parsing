@@ -27,7 +27,7 @@ nltk.data.path.append(nltk_data_path)
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
-    nltk.download('punkt', download_dir=nltk_data_path)
+    nltk.download('punkt', download_dir=nltk_data_path, quiet=True)
 
 def get_env_var(var_name):
     """
