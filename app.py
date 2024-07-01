@@ -46,7 +46,12 @@ vector_index = cached_process_documents(directory)
 # Prepare the query/answer Streamlit User Interface (UI)
 st.title("Research Document Query Application")
 st.write("Ask questions about the research documents")
-user_input = st.text_input("Enter your question here:")
+
+# Initialize session state for user input
+if 'user_input' not in st.session_state:
+    st.session_state['user_input'] = ''
+    
+user_input = st.text_input("Enter your question here:", st.session_state['user_input'])
 
 # Initialize empty placeholder for the progress bar and query response
 progress_bar_placeholder = st.empty()
@@ -55,25 +60,31 @@ response_placeholder = st.empty()
 # Query Submission Logic
 if st.button("Submit"):
     if user_input:
-        # Clear previous response
-        response_placeholder.empty()
-        
-        # Initialize the progress bar
-        progress_bar = progress_bar_placeholder.progress(0)
-        
-        # Show progress
-        for i in range(100):
-            import time
-            time.sleep(0.05)
-            progress_bar.progress(i + 1)
-        
-        # Load query response
-        response = process_question(user_input, vector_index, llm)
-        response_placeholder.markdown(response)
-        
-        # Complete and remove progress bar
-        progress_bar.progress(100)
-        progress_bar_placeholder.empty()
+        try:
+            # Update session state
+            st.session_state['user_input'] = user_input
+            
+            # Clear previous response
+            response_placeholder.empty()
+            
+            # Initialize the progress bar
+            progress_bar = progress_bar_placeholder.progress(0)
+            
+            # Show progress
+            for i in range(100):
+                import time
+                time.sleep(0.05)
+                progress_bar.progress(i + 1)
+            
+            # Load query response
+            response = process_question(user_input, vector_index, llm)
+            response_placeholder.markdown(response)
+            
+            # Complete and remove progress bar
+            progress_bar.progress(100)
+            progress_bar_placeholder.empty()
+        except Exception as e:
+            st.error("An error occurred while processing your request. Please try again.")
     else:
         # Handle incorrect submission
         st.write("Please enter a valid query.")
@@ -92,29 +103,32 @@ summary_response_placeholder = st.empty()
 # Summary Submission Logic
 if st.button("Summarize Document"):
     if selected_document != "Select a Document":
-        # Clear previous summary
-        summary_response_placeholder.empty()
-        
-        # Query LLM for the summary
-        summary_query = (f"Summarize {selected_document}. Include the methodology, techniques, and conclusion")
-        
-        # Initialize the progress bar
-        summary_progress_bar = summary_progress_bar_placeholder.progress(0)
-        
-        # Show progress
-        for i in range(100):
-            import time
-            time.sleep(0.05)
-            summary_progress_bar.progress(i + 1)
-        
-        # Load summary response
-        summary_response = process_question(summary_query, vector_index, llm)
-        summary_response_placeholder.write("Summary:")
-        summary_response_placeholder.markdown(summary_response)
-        
-        # Complete and remove progress bar
-        summary_progress_bar.progress(100)
-        summary_progress_bar_placeholder.empty()
+        try:
+            # Clear previous summary
+            summary_response_placeholder.empty()
+            
+            # Query LLM for the summary
+            summary_query = (f"Summarize {selected_document}. Include the methodology, techniques, and conclusion")
+            
+            # Initialize the progress bar
+            summary_progress_bar = summary_progress_bar_placeholder.progress(0)
+            
+            # Show progress
+            for i in range(100):
+                import time
+                time.sleep(0.05)
+                summary_progress_bar.progress(i + 1)
+            
+            # Load summary response
+            summary_response = process_question(summary_query, vector_index, llm)
+            summary_response_placeholder.write("Summary:")
+            summary_response_placeholder.markdown(summary_response)
+            
+            # Complete and remove progress bar
+            summary_progress_bar.progress(100)
+            summary_progress_bar_placeholder.empty()
+        except Exception as e:
+            st.error("An error occurred while summarizing the document. Please try again.")
     else:
         # Handle incorrect submission
         st.write("Please select a document to summarize.")
