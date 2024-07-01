@@ -22,7 +22,7 @@ from app.utils import get_env_var, tokenize_sentence
 from app.reader import read_directory
 from app.splitter import intelligent_chunk
 from app.vector import create_vector_store, load_text, index_text
-from app.lengths import analyze_text_lengths
+from app.lengths import analyze_length
 
 def setup_environment():
     """
