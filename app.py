@@ -5,6 +5,7 @@ from app.components import initialize_cassio, llm_embedding
 from app.reader import read_directory
 from app.splitter import split_text
 from app.vector import create_vector_store, load_text, index_text
+from langchain_openai import OpenAI, OpenAIEmbeddings
 
 # Initialize environment variables
 astra_id = get_env_var('ASTRA_DB_ID')
@@ -22,15 +23,24 @@ splitted_text = split_text(text, chunk_size=3200)
 
 # Create and load vector store
 vector_store = create_vector_store(embedding, table_name="sumhack")
-vector_store = load_text(vector_store, splitted_text)
-vector_index = index_text(vector_store)
+
+try:
+    vector_store = load_text(vector_store, splitted_text)
+    vector_index = index_text(vector_store)
+except Exception as e:
+    st.error(f"Error loading text into vector store: {e}")
+    raise e
 
 def process_question(query):
     """
     Process a given query and return the response.
     """
-    response = vector_index.query(query, llm).strip()
-    return response
+    try:
+        response = vector_index.query(query, llm).strip()
+        return response
+    except Exception as e:
+        st.error(f"Error processing question: {e}")
+        return "An error occurred while processing your question."
 
 # Streamlit app layout
 st.title("Medical Document Processing with LLM")
