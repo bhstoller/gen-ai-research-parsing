@@ -73,38 +73,4 @@ st.write("---")
 st.write("Request summaries of the research documents")
 
 # Show dropdown menu for document selection
-selected_document = st.selectbox("Select a document to summarize:", document_names, index=0)
-
-# Initialize empty placeholder for the progress bar and summary response
-summary_progress_bar_placeholder = st.empty()
-summary_response_placeholder = st.empty()
-
-# Summary Submission Logic
-if st.button("Summarize Document"):
-    if selected_document != "Select a Document":
-        # Clear previous summary
-        summary_response_placeholder.empty()
-        
-        # Query LLM for the summary
-        summary_query = (f"Summarize {selected_document}. Include the methodology, techniques, and conclusion")
-        
-        # Initialize the progress bar
-        summary_progress_bar = summary_progress_bar_placeholder.progress(0)
-        
-        # Show progress
-        for i in range(100):
-            import time
-            time.sleep(0.05)
-            summary_progress_bar.progress(i + 1)
-        
-        # Load summary response
-        summary_response = process_question(summary_query, vector_index, llm)
-        summary_response_placeholder.write("Summary:")
-        summary_response_placeholder.markdown(summary_response)
-        
-        # Complete and remove progress bar
-        summary_progress_bar.progress(100)
-        summary_progress_bar_placeholder.empty()
-    else:
-        # Handle incorrect submission
-        st.write("Please select a document to summarize.")
+select

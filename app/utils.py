@@ -21,10 +21,6 @@ load_dotenv()
 
 # Specify the local nltk_data directory
 nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
-<<<<<<< HEAD
-=======
-os.makedirs(nltk_data_path, exist_ok=True)
->>>>>>> 61c446c8 (Ensure nltk_data directory and punkt tokenizer are set up)
 nltk.data.path.append(nltk_data_path)
 
 # Check if 'punkt' is already downloaded, if not, download it
