@@ -25,18 +25,13 @@ splitted_text = split_text(text, chunk_size=3200)
 vector_store = create_vector_store(embedding, table_name="sumhack")
 
 # Clear existing data
-vector_store = clear_vector_store(vector_store)
+# vector_store = clear_vector_store(vector_store)
 
-# Add debugging statements
-st.write("Vector store cleared successfully.")
 
 try:
     vector_store = load_text(vector_store, splitted_text)
-    st.write("Texts loaded into vector store successfully.")
     vector_index = index_text(vector_store)
-    st.write("Vector store indexed successfully.")
 except Exception as e:
-    st.error(f"Error loading text into vector store: {e}")
     raise e
 
 
