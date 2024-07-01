@@ -43,8 +43,8 @@ def process_question(query):
         return "An error occurred while processing your question."
 
 # Streamlit app layout
-st.title("Medical Document Processing with LLM")
-st.write("Ask questions about medical documents:")
+st.title("Research Document Analysis with LLM")
+st.write("Ask questions about the research documents:")
 
 # User input
 user_input = st.text_input("Enter your question here:")
