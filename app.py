@@ -23,7 +23,7 @@ from pathlib import Path
 from app.main import setup_environment, process_documents, process_question
 
 # Cache the environment setup
-@st.cache_resource()
+@st.cache(allow_output_mutation=True)
 def cached_setup_environment():
     return setup_environment()
 
@@ -31,7 +31,7 @@ def cached_setup_environment():
 llm, embedding = cached_setup_environment()
 
 # Cache the document processing
-@st.cache_data(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def cached_process_documents(directory):
     return process_documents(directory, embedding)
 
@@ -118,3 +118,4 @@ if st.button("Summarize Document"):
     else:
         # Handle incorrect submission
         st.write("Please select a document to summarize.")
+
