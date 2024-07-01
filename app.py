@@ -23,17 +23,17 @@ from pathlib import Path
 from app.main import setup_environment, process_documents, process_question
 
 # Cache the environment setup
-@st.cache(allow_output_mutation=True)
+@st.cache_resource()
 def cached_setup_environment():
     return setup_environment()
 
-# Cache the document processing
-@st.cache(allow_output_mutation=True)
-def cached_process_documents(directory, embedding):
-    return process_documents(directory, embedding)
-
 # Initialize components and environment
 llm, embedding = cached_setup_environment()
+
+# Cache the document processing
+@st.cache_data(allow_output_mutation=True)
+def cached_process_documents(directory):
+    return process_documents(directory, embedding)
 
 # Process research documents
 directory = Path("documents")
@@ -41,7 +41,7 @@ document_files = [f for f in directory.glob('*.pdf')]
 document_names = ["Select a Document"] + [doc.name for doc in document_files]
 
 # Create the vector index
-vector_index = cached_process_documents(directory, embedding)
+vector_index = cached_process_documents(directory)
 
 # Prepare the query/answer Streamlit User Interface (UI)
 st.title("Research Document Query Application")
