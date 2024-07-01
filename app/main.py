@@ -37,6 +37,7 @@ def process_documents(directory, embedding):
     # Read documents
     text = read_directory(directory)
 
+<<<<<<< HEAD
     # Chunk documents
     mean_length, std_length, max_length = analyze_length(directory)
     possible_chunk = int(mean_length + std_length)
@@ -44,6 +45,11 @@ def process_documents(directory, embedding):
     buffer = 100
     max_chunk_size = min(possible_chunk, max_length / 2, model_max - buffer)
     splitted_text = intelligent_chunk(text, max_chunk_size=max_chunk_size)
+=======
+directory = Path("documents")
+text = read_directory(directory)
+splitted_text = split_text(text, chunk_size=1600)
+>>>>>>> 7c6e76c8d627f3163c4f369cdeb4995ec72a6a1f
 
     # Process documents
     vector_store = create_vector_store(embedding, table_name="sumhack")
