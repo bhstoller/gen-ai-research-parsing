@@ -18,12 +18,22 @@ References:
     - Real Python Article: https://realpython.com/build-llm-rag-chatbot-with-langchain/
 """
 
-from pathlib import Path
 import streamlit as st
+from pathlib import Path
 from app.main import setup_environment, process_documents, process_question
 
+# Cache the environment setup
+@st.cache(allow_output_mutation=True)
+def cached_setup_environment():
+    return setup_environment()
+
+# Cache the document processing
+@st.cache(allow_output_mutation=True)
+def cached_process_documents(directory, embedding):
+    return process_documents(directory, embedding)
+
 # Initialize components and environment
-llm, embedding = setup_environment()
+llm, embedding = cached_setup_environment()
 
 # Process research documents
 directory = Path("documents")
@@ -31,7 +41,7 @@ document_files = [f for f in directory.glob('*.pdf')]
 document_names = ["Select a Document"] + [doc.name for doc in document_files]
 
 # Create the vector index
-vector_index = process_documents(directory, embedding)
+vector_index = cached_process_documents(directory, embedding)
 
 # Prepare the query/answer Streamlit User Interface (UI)
 st.title("Research Document Query Application")
@@ -86,7 +96,7 @@ if st.button("Summarize Document"):
         summary_response_placeholder.empty()
         
         # Query LLM for the summary
-        summary_query = f"Summarize {selected_document}. Include the methodology, techniques, and conclusion."
+        summary_query = (f"Summarize {selected_document}. Include the methodology, techniques, and conclusion")
         
         # Initialize the progress bar
         summary_progress_bar = summary_progress_bar_placeholder.progress(0)
