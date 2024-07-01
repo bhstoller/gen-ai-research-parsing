@@ -19,12 +19,19 @@ from nltk.tokenize import sent_tokenize
 # Load the .env file
 load_dotenv()
 
-# Download the NLP model
-nltk.download('punkt')
+# Specify the local nltk_data directory
+nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
+nltk.data.path.append(nltk_data_path)
+
+# Check if 'punkt' is already downloaded, if not, download it
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', download_dir=nltk_data_path)
 
 def get_env_var(var_name):
     """
-    Return the quieried dotenv variable
+    Return the queried dotenv variable
     """
     return os.getenv(var_name)
 
