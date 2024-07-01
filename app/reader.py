@@ -1,7 +1,14 @@
 """
-This module contains the PDF reading logic.
+This module contains the text extraction and directory reading logic.
 
-It includes functions read and parse the text in the PDFs.
+Functions:
+    extract_text: Compiles the ingested PDF's raw text
+    read_directory: Returns the raw text for each PDF in the directory
+
+References:
+    - Datastax (Astra) Documentation: https://docs.datastax.com/en/astra-db-serverless/index.html
+    - Krish Naik Youtube Channel: https://www.youtube.com/watch?v=zxo3T4aQj6Q
+    - OpenAI GPT-3 (ChatGPT): https://chatgpt.com
 """
 
 from PyPDF2 import PdfReader

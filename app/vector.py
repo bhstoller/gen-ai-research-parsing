@@ -1,15 +1,25 @@
 """
-This module contains the vector operations logic.
+This module contains the vector database operations logic, which is
+hosted by Astra/Cassandra on Datastax.
 
-It inludes functions to create the vector storage, load the text, 
-index the text, and reset the index.
+Functions:
+    create_vector_store: Creates the Astra vector store
+    load_text: Loads the text into vectors inside the vector store
+    index_text: Indexes the vectors inside the vector store
+
+References:
+    - Datastax (Astra) Documentation: https://docs.datastax.com/en/astra-db-serverless/index.html
+    - Krish Naik Youtube Channel: https://www.youtube.com/watch?v=zxo3T4aQj6Q
+    - OpenAI GPT-3 (ChatGPT): https://chatgpt.com
+    - Langchain Documentation: https://python.langchain.com/v0.2/docs/integrations/llms/openai/
 """
+
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain_community.vectorstores import Cassandra
 
 def create_vector_store(embedding, table_name, session=None, keyspace=None):
     """
-    Create vector store
+    Return the created Astra vector store
     """
     astra_vector_store = Cassandra(
         embedding= embedding,
@@ -21,28 +31,15 @@ def create_vector_store(embedding, table_name, session=None, keyspace=None):
 
 def load_text(vector_store, texts):
     """
-    Load the text into astra vectors
+    Return the updated Astra vector store after laoding
+    the text into the vectors
     """
     vector_store.add_texts(texts)
     return vector_store
 
-def load_images(vector_store, image_features):
-    """
-    Load the images into astra vectors
-    """
-    vector_store.add_texts(image_features)
-    return vector_store
-
 def index_text(vector_store):
     """
-    Load the vector index
+    Return the vector index of the Astra vector store
     """
     vector_index = VectorStoreIndexWrapper(vectorstore= vector_store)
     return vector_index
-
-def clear_vector_store(vector_store):
-    """
-    Return the vector store after clearing its contents.
-    """
-    vector_store = vector_store.clear()
-    return vector_store

@@ -19,6 +19,8 @@ fitz = "^0.0.1.dev2"
 frontend = "^0.0.3"
 flask = "^3.0.3"
 streamlit = "^1.36.0"
+nltk = "^3.8.1"
+transformers = "^4.42.3"
 
 
 [tool.poetry.group.dev.dependencies]

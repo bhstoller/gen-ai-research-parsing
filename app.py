@@ -1,62 +1,110 @@
-import streamlit as st
+"""
+This module contains the Streamlit application logic for querying and 
+summarizing the directory of research documents using the LLM application.
+
+The application initializes the environment, processes documents, and allows users to 
+submit queries or request summaries of the documents.
+
+Usage:
+    - The user can enter a question in the text input to query the processed documents.
+    - The user can select a document from the dropdown menu and click the "Summarize Document" 
+      button to get a summary of the selected document.
+
+References:
+    - Streamlit Documentation: https://docs.streamlit.io
+    - OpenAI API Documentation: https://platform.openai.com/docs/introduction
+    - OpenAI GPT-3 (ChatGPT): https://chatgpt.com
+    - Langchain Documentation: https://python.langchain.com/v0.2/docs/integrations/llms/openai/
+    - Real Python Article: https://realpython.com/build-llm-rag-chatbot-with-langchain/
+"""
+
 from pathlib import Path
-from app.utils import get_env_var
-from app.components import initialize_cassio, llm_embedding
-from app.reader import read_directory
-from app.splitter import split_text
-from app.vector import create_vector_store, load_text, index_text, clear_vector_store
-from langchain_openai import OpenAI, OpenAIEmbeddings
+import streamlit as st
+from app.main import setup_environment, process_documents, process_question
 
-# Initialize environment variables
-astra_id = get_env_var('ASTRA_DB_ID')
-astra_token = get_env_var('ASTRA_TOKEN')
-openai_api_key = get_env_var('OPENAI_API_KEY')
+# Initialize components and environment
+llm, embedding = setup_environment()
 
-# Initialize components
-initialize_cassio(astra_token, astra_id)
-llm, embedding = llm_embedding(openai_api_key)
-
-# Read and process documents
+# Process research documents
 directory = Path("documents")
-text = read_directory(directory)
-splitted_text = split_text(text, chunk_size=3200)
+document_files = [f for f in directory.glob('*.pdf')]
+document_names = ["Select a Document"] + [doc.name for doc in document_files]
 
-# Create and load vector store
-vector_store = create_vector_store(embedding, table_name="sumhack")
+# Create the vector index
+vector_index = process_documents(directory, embedding)
 
-# Clear existing data
-# vector_store = clear_vector_store(vector_store)
-
-
-try:
-    vector_store = load_text(vector_store, splitted_text)
-    vector_index = index_text(vector_store)
-except Exception as e:
-    raise e
-
-
-def process_question(query):
-    """
-    Process a given query and return the response.
-    """
-    try:
-        response = vector_index.query(query, llm).strip()
-        return response
-    except Exception as e:
-        st.error(f"Error processing question: {e}")
-        return "An error occurred while processing your question."
-
-# Streamlit app layout
+# Prepare the query/answer Streamlit User Interface (UI)
 st.title("Research Document Query Application")
 st.write("Ask questions about the research documents")
-
-# User input
 user_input = st.text_input("Enter your question here:")
 
-# Submit button
+# Initialize empty placeholder for the progress bar and query response
+progress_bar_placeholder = st.empty()
+response_placeholder = st.empty()
+
+# Query Submission Logic
 if st.button("Submit"):
     if user_input:
-        response = process_question(user_input)
-        st.write(response)
+        # Clear previous response
+        response_placeholder.empty()
+        
+        # Initialize the progress bar
+        progress_bar = progress_bar_placeholder.progress(0)
+        
+        # Show progress
+        for i in range(100):
+            import time
+            time.sleep(0.05)
+            progress_bar.progress(i + 1)
+        
+        # Load query response
+        response = process_question(user_input, vector_index, llm)
+        response_placeholder.markdown(response)
+        
+        # Complete and remove progress bar
+        progress_bar.progress(100)
+        progress_bar_placeholder.empty()
     else:
+        # Handle incorrect submission
         st.write("Please enter a valid query.")
+
+# Prepare summary Streamlit User Interface (UI)
+st.write("---")
+st.write("Request summaries of the research documents")
+
+# Show dropdown menu for document selection
+selected_document = st.selectbox("Select a document to summarize:", document_names, index=0)
+
+# Initialize empty placeholder for the progress bar and summary response
+summary_progress_bar_placeholder = st.empty()
+summary_response_placeholder = st.empty()
+
+# Summary Submission Logic
+if st.button("Summarize Document"):
+    if selected_document != "Select a Document":
+        # Clear previous summary
+        summary_response_placeholder.empty()
+        
+        # Query LLM for the summary
+        summary_query = (f"Summarize {selected_document}. Include the methodology, techniques, and conclusion")
+        
+        # Initialize the progress bar
+        summary_progress_bar = summary_progress_bar_placeholder.progress(0)
+        
+        # Show progress
+        for i in range(100):
+            import time
+            time.sleep(0.05)
+            summary_progress_bar.progress(i + 1)
+        
+        # Load summary response
+        summary_response = process_question(summary_query, vector_index, llm)
+        summary_response_placeholder.write("Summary:")
+        summary_response_placeholder.markdown(summary_response)
+        
+        # Complete and remove progress bar
+        summary_progress_bar.progress(100)
+        summary_progress_bar_placeholder.empty()
+    else:
+        # Handle incorrect submission
+        st.write("Please select a document to summarize.")

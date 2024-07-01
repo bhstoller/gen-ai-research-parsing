@@ -1,61 +1,35 @@
 """
-This module initializes the vector DB and LLM.
+This module contains the vector database and LLM intiailization logic. The vector
+database is hosted by Astra/Cassandra, while the LLM and embedding
+uses OpenAI's GPT-3 model.
 
-It contains functions to initialize cassio and OpenAI
+Functions:
+    initialize_cassio: Initializes the vector database 
+    llm_embedding: Generates the GPT-3 LLM and embedding
+
+References:
+    - Datastax (Astra) Documentation: https://docs.datastax.com/en/astra-db-serverless/index.html
+    - OpenAI API Documentation: https://platform.openai.com/docs/introduction
+    - OpenAI GPT-3 (ChatGPT): https://chatgpt.com
+    - Krish Naik Youtube Channel: https://www.youtube.com/watch?v=zxo3T4aQj6Q
+    - Langchain Documentation: https://python.langchain.com/v0.2/docs/integrations/llms/openai/
 """
 
 
-# from langchain.indexes.vectorstore import VectorStoreIndexWrapper
-# from langchain_community.vectorstores import Cassandra
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms import OpenAI
 import cassio
 
 def initialize_cassio(db_token, db_id):
     """
-    Initialize cassio DB
+    Initialize the Astra/Cassandra vector database
     """
     cassio.init(token= db_token, database_id= db_id)
 
 def llm_embedding(api_key):
     """
-    Generate llm and embedding
+    Return the instantiated GPT-3 LLM and embedding
     """
     llm = OpenAI(api_key= api_key)
     embedding = OpenAIEmbeddings(api_key= api_key)
     return llm, embedding
-
-# def create_vector_store(embedding, table_name, session=None, keyspace=None):
-#     """
-#     Create vector store
-#     """
-#     astra_vector_store = Cassandra(
-#         embedding= embedding,
-#         table_name= table_name,
-#         session= session,
-#         keyspace= keyspace
-#     )
-#     return astra_vector_store
-
-# def load_text(vector_store, texts):
-#     """
-#     Load the specified number of headlines
-#     """
-#     vector_store = reset_vector_store(vector_store)
-#     vector_store.add_texts(texts)
-#     return vector_store
-
-# def load_index(vector_store):
-#     """
-#     Load the vector index
-#     """  
-#     vector_index = VectorStoreIndexWrapper(vectorstore= vector_store)
-#     return vector_index
-
-# def reset_vector_store(vector_store):
-#     """
-#     Return the vector store after clearing its contents.
-#     """
-#     # Assuming vector_store has a method to clear all vectors
-#     vector_store.clear()
-#     return vector_store
