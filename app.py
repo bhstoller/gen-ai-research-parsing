@@ -4,7 +4,7 @@ from app.utils import get_env_var
 from app.components import initialize_cassio, llm_embedding
 from app.reader import read_directory
 from app.splitter import split_text
-from app.vector import create_vector_store, load_text, index_text
+from app.vector import create_vector_store, load_text, index_text, clear_vector_store
 from langchain_openai import OpenAI, OpenAIEmbeddings
 
 # Initialize environment variables
@@ -23,6 +23,9 @@ splitted_text = split_text(text, chunk_size=3200)
 
 # Create and load vector store
 vector_store = create_vector_store(embedding, table_name="sumhack")
+
+# Clear existing data
+vector_store = clear_vector_store(vector_store)
 
 try:
     vector_store = load_text(vector_store, splitted_text)
@@ -43,7 +46,7 @@ def process_question(query):
         return "An error occurred while processing your question."
 
 # Streamlit app layout
-st.title("Research Document Analysis with LLM")
+st.title("Research Document Query Application")
 st.write("Ask questions about the research documents:")
 
 # User input
@@ -53,6 +56,6 @@ user_input = st.text_input("Enter your question here:")
 if st.button("Submit"):
     if user_input:
         response = process_question(user_input)
-        st.write("Response:", response)
+        st.write(response)
     else:
         st.write("Please enter a valid query.")
