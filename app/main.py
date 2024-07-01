@@ -41,7 +41,7 @@ def process_documents(directory, embedding):
     """
     Reads and processes documents to create the vector index.
     """
-    mean_length, median_length, max_length = analyze_text_lengths(directory)
+    mean_length, median_length, max_length = analyze_length(directory)
     max_chunk_size = int(mean_length / 2)
     model_max_content_length = 4097
     buffer_length = 100
