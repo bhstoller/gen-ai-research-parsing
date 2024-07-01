@@ -21,7 +21,7 @@ llm, embedding = llm_embedding(openai_api_key)
 
 directory = Path("documents")
 text = read_directory(directory)
-splitted_text = split_text(text, chunk_size=3200)
+splitted_text = split_text(text, chunk_size=1600)
 
 vector_store = create_vector_store(embedding, table_name="sumhack")
 vector_store = load_text(vector_store, splitted_text)
