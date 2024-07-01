@@ -46,12 +46,7 @@ vector_index = cached_process_documents(directory)
 # Prepare the query/answer Streamlit User Interface (UI)
 st.title("Research Document Query Application")
 st.write("Ask questions about the research documents")
-
-# Initialize session state for user input
-if 'user_input' not in st.session_state:
-    st.session_state['user_input'] = ''
-    
-user_input = st.text_input("Enter your question here:", st.session_state['user_input'])
+user_input = st.text_input("Enter your question here:")
 
 # Initialize empty placeholder for the progress bar and query response
 progress_bar_placeholder = st.empty()
@@ -61,9 +56,6 @@ response_placeholder = st.empty()
 if st.button("Submit"):
     if user_input:
         try:
-            # Update session state
-            st.session_state['user_input'] = user_input
-            
             # Clear previous response
             response_placeholder.empty()
             
