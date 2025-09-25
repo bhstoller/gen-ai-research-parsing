@@ -18,6 +18,7 @@ References:
 import os
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain_community.vectorstores import Cassandra
+from langchain.chains import RetrievalQA
 from app.utils import get_env_var, tokenize_sentence
 from app.components import initialize_cassio, llm_embedding
 from app.reader import read_directory
@@ -58,6 +59,16 @@ def process_documents(directory, embedding):
 def process_question(query, vector_index, llm):
     """
     Processes the user queries to return the appropriate response.
+    Uses a retriever to avoid passing too many tokens to the LLM.
     """
-    response = vector_index.query(query, llm).strip()
-    return response
+    retriever = vector_index.vectorstore.as_retriever(search_kwargs={"k": 2})  # keep it small
+
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=llm,
+        retriever=retriever,
+        chain_type="stuff",
+        return_source_documents=False
+    )
+
+    response = qa_chain.run(query)
+    return response.strip()
