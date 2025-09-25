@@ -16,20 +16,23 @@ References:
 """
 
 
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.llms import OpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 import cassio
 
 def initialize_cassio(db_token, db_id):
     """
     Initialize the Astra/Cassandra vector database
     """
-    cassio.init(token= db_token, database_id= db_id)
+    cassio.init(token=db_token, database_id=db_id)
 
 def llm_embedding(api_key):
     """
-    Return the instantiated GPT-3 LLM and embedding
+    Return the instantiated GPT-4o LLM and embedding
     """
-    llm = OpenAI(api_key= api_key)
-    embedding = OpenAIEmbeddings(api_key= api_key)
+    llm = ChatOpenAI(
+        openai_api_key=api_key,
+        model="gpt-4o",
+        temperature=0
+    )
+    embedding = OpenAIEmbeddings(openai_api_key=api_key)
     return llm, embedding
