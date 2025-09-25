@@ -76,7 +76,7 @@ if st.button("Submit"):
             progress_bar.progress(100)
             progress_bar_placeholder.empty()
         except Exception as e:
-            st.error("An error occurred while processing your request. Please try again.")
+            st.error(f"An error occurred while processing your request: {e}")
     else:
         # Handle incorrect submission
         st.write("Please enter a valid query.")
